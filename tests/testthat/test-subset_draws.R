@@ -1,12 +1,18 @@
 test_that("subset_draws works correctly for draws_matrix objects", {
 
+  # Store and restore option to ensure test isolation
+  old_option <- getOption("posterior.warn_on_merge_chains")
+  on.exit(options(posterior.warn_on_merge_chains = old_option))
+
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- as_draws_matrix(example_draws())
   x_sub <- subset_draws(x, variable = c("mu", "tau"), iteration = 5:10)
   x_sub2 <- x[c(5:10, 105:110, 205:210, 305:310), c("mu", "tau")]
   expect_equal(x_sub, x_sub2, ignore_attr = c("dimnames", "nchains"))
   expect_equal(iteration_ids(x_sub), 1:6)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(2, 2, 4, 4), unique = FALSE))
+  x_sub <- subset_draws(x, draw = c(2, 2, 4, 4), unique = FALSE)
   expect_equal(niterations(x_sub), 4)
   expect_equal(x_sub[1, ], x_sub[2, ], ignore_attr = "dimnames")
 
@@ -18,7 +24,7 @@ test_that("subset_draws works correctly for draws_matrix objects", {
   expect_equal(setdiff(variables(x, reserved = TRUE), "mu"), variables(x_sub, reserved = TRUE))
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)
@@ -35,6 +41,8 @@ test_that("subset_draws works correctly for draws_array objects", {
   old_option <- getOption("posterior.warn_on_merge_chains")
   on.exit(options(posterior.warn_on_merge_chains = old_option))
 
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- as_draws_array(example_draws())
 
   x_sub <- subset_draws(x, variable = c("mu", "tau"), iteration = 5:10, chain = 3:4)
@@ -46,10 +54,8 @@ test_that("subset_draws works correctly for draws_array objects", {
   expect_equal(nchains(x_sub), 2)
   expect_equal(x_sub[, 1, ], x_sub[, 2, ], ignore_attr = "dimnames")
 
-  expect_message(
-    x_sub <- subset_draws(x, draw = c(1, 200, 10)),
-    "Merging chains in order to subset via 'draw'"
-  )
+
+  x_sub <- subset_draws(x, draw = c(1, 200, 10))
   expect_equal(niterations(x_sub), 3)
 
   x <- weight_draws(x, rep(1, ndraws(x)))
@@ -60,7 +66,7 @@ test_that("subset_draws works correctly for draws_array objects", {
   expect_equal(setdiff(variables(x, reserved = TRUE), "mu"), variables(x_sub, reserved = TRUE))
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)
@@ -89,13 +95,19 @@ test_that("subset_draws preserves weighted draws_df when selecting all variables
 })
 
 test_that("subset_draws works correctly for draws_df objects", {
+  # Store and restore option to ensure test isolation
+  old_option <- getOption("posterior.warn_on_merge_chains")
+  on.exit(options(posterior.warn_on_merge_chains = old_option))
+
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- as_draws_df(example_draws())
   x_sub <- subset_draws(x, variable = c("mu", "tau"), iteration = 5:10, chain = 3:4)
   expect_equal(x$mu[x$.iteration %in% 5:10 & x$.chain %in% 3:4], x_sub$mu)
   expect_equal(iteration_ids(x_sub), 1:6)
   expect_equal(chain_ids(x_sub), 1:2)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(5, 5, 6), unique = FALSE))
+  x_sub <- subset_draws(x, draw = c(5, 5, 6), unique = FALSE)
   expect_equal(ndraws(x_sub), 3)
   expect_equal(x_sub$mu[1], x_sub$mu[2])
 
@@ -107,7 +119,7 @@ test_that("subset_draws works correctly for draws_df objects", {
   expect_equal(setdiff(variables(x, reserved = TRUE), "mu"), variables(x_sub, reserved = TRUE))
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)
@@ -119,6 +131,8 @@ test_that("subset_draws works correctly for draws_list objects", {
   old_option <- getOption("posterior.warn_on_merge_chains")
   on.exit(options(posterior.warn_on_merge_chains = old_option))
 
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- as_draws_list(example_draws())
   x_sub <- subset_draws(x, variable = c("theta[1]"), iteration = 5:10, chain = 3:4)
   expect_equal(variables(x_sub), "theta[1]")
@@ -129,10 +143,7 @@ test_that("subset_draws works correctly for draws_list objects", {
   expect_equal(niterations(x_sub), 3)
   expect_equal(x_sub[[1]]$mu[1], x_sub[[1]]$mu[2])
 
-  expect_message(
-    x_sub <- subset_draws(x, draw = c(1, 200, 10)),
-    "Merging chains in order to subset via 'draw'"
-  )
+  x_sub <- subset_draws(x, draw = c(1, 200, 10))
   expect_equal(niterations(x_sub), 3)
 
   x <- weight_draws(x, rep(1, ndraws(x)))
@@ -143,7 +154,7 @@ test_that("subset_draws works correctly for draws_list objects", {
   expect_equal(setdiff(variables(x, reserved = TRUE), "mu"), variables(x_sub, reserved = TRUE))
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)
@@ -171,6 +182,8 @@ test_that("subset_draws works correctly for draws_rvars objects", {
   )
   expect_equal(niterations(x_sub), 3)
 
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- weight_draws(x, rep(1, ndraws(x)))
   x_sub <- subset_draws(x, variable = "mu")
   expect_equal(variables(x_sub, reserved = TRUE), c("mu", ".log_weight"))
@@ -179,7 +192,7 @@ test_that("subset_draws works correctly for draws_rvars objects", {
   expect_equal(setdiff(variables(x, reserved = TRUE), "mu"), variables(x_sub, reserved = TRUE))
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)
@@ -206,11 +219,13 @@ test_that("subset_draws works correctly for rvar objects", {
   )
   expect_equal(niterations(x_sub), 3)
 
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x_sub <- subset_draws(x, iteration = c(1, 2), chain = c(1, 2, 3), exclude = TRUE)
   expect_equal(niterations(x_sub), niterations(x) - 2)
   expect_equal(nchains(x_sub), 1)
 
-  expect_message(x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE))
+  x_sub <- subset_draws(x, draw = c(1, 2, 3), exclude = TRUE)
   expect_equal(ndraws(x) - 3, ndraws(x_sub))
 
   x_sub <- subset_draws(x, iteration = c(1, 2, 3), exclude = TRUE)

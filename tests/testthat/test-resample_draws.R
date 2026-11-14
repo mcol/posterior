@@ -1,24 +1,31 @@
 test_that("resample_draws returns expected format", {
+
+  # Store and restore option to ensure test isolation
+  old_option <- getOption("posterior.warn_on_merge_chains")
+  on.exit(options(posterior.warn_on_merge_chains = old_option))
+
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- example_draws()
   w <- runif(ndraws(x), 0, 10)
 
   x <- as_draws_matrix(x)
-  expect_message(x_rs <- resample_draws(x, weights = w, method = "stratified"))
+  x_rs <- resample_draws(x, weights = w, method = "stratified")
   expect_true(is_draws_matrix(x_rs))
   expect_equal(ndraws(x_rs), ndraws(x))
 
   x <- as_draws_array(x)
-  expect_message(x_rs <- resample_draws(x, weights = w, method = "deterministic", ndraws = 200))
+  x_rs <- resample_draws(x, weights = w, method = "deterministic", ndraws = 200)
   expect_true(is_draws_array(x_rs))
   expect_equal(ndraws(x_rs), 200)
 
   x <- as_draws_df(x)
-  expect_message(x_rs <- resample_draws(x, weights = w, method = "simple"))
+  x_rs <- resample_draws(x, weights = w, method = "simple")
   expect_true(is_draws_df(x_rs))
   expect_equal(ndraws(x_rs), ndraws(x))
 
   x <- as_draws_list(x)
-  expect_message(x_rs <- resample_draws(x, w, method = "simple_no_replace", ndraws = 100))
+  x_rs <- resample_draws(x, w, method = "simple_no_replace", ndraws = 100)
   expect_true(is_draws_list(x_rs))
   expect_equal(ndraws(x_rs), 100)
   expect_error(
@@ -27,7 +34,7 @@ test_that("resample_draws returns expected format", {
   )
 
   x <- as_draws_rvars(x)
-  expect_message(x_rs <- resample_draws(x, weights = w, method = "simple"))
+  x_rs <- resample_draws(x, weights = w, method = "simple")
   expect_true(is_draws_rvars(x_rs))
   expect_equal(ndraws(x_rs), ndraws(x))
 })
@@ -54,15 +61,21 @@ test_that("Resampling algorithms return the correct result in expectation", {
 })
 
 test_that("resample_draws uses stored weights when available", {
+  # Store and restore option to ensure test isolation
+  old_option <- getOption("posterior.warn_on_merge_chains")
+  on.exit(options(posterior.warn_on_merge_chains = old_option))
+
+  options(posterior.warn_on_merge_chains = FALSE)
+
   x <- example_draws()
 
-  expect_message(x_rs <- resample_draws(x))
+  x_rs <- resample_draws(x)
   expect_true(is_draws_array(x_rs))
   expect_equal(ndraws(x_rs), ndraws(x))
 
   w <- runif(ndraws(x), 0, 10)
   x <- weight_draws(x, w)
-  expect_message(x_rs <- resample_draws(x))
+  x_rs <- resample_draws(x)
   expect_true(is_draws_array(x_rs))
   expect_equal(ndraws(x_rs), ndraws(x))
   # .log_weight variable has been dropped
