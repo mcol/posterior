@@ -3,12 +3,12 @@ test_that("subset_draws works correctly for draws_matrix objects", {
   x <- as_draws_matrix(example_draws())
   x_sub <- subset_draws(x, variable = c("mu", "tau"), iteration = 5:10)
   x_sub2 <- x[c(5:10, 105:110, 205:210, 305:310), c("mu", "tau")]
-  expect_equal(x_sub, x_sub2, ignore_attr = TRUE)
+  expect_equal(x_sub, x_sub2, ignore_attr = c("dimnames", "nchains"))
   expect_equal(iteration_ids(x_sub), 1:6)
 
   expect_message(x_sub <- subset_draws(x, draw = c(2, 2, 4, 4), unique = FALSE))
   expect_equal(niterations(x_sub), 4)
-  expect_equal(x_sub[1, ], x_sub[2, ], ignore_attr = TRUE)
+  expect_equal(x_sub[1, ], x_sub[2, ], ignore_attr = "dimnames")
 
   x <- weight_draws(x, rep(1, ndraws(x)))
   x_sub <- subset_draws(x, variable = "mu")
@@ -38,13 +38,13 @@ test_that("subset_draws works correctly for draws_array objects", {
   x <- as_draws_array(example_draws())
 
   x_sub <- subset_draws(x, variable = c("mu", "tau"), iteration = 5:10, chain = 3:4)
-  expect_equal(x[5:10, 3:4, c("mu", "tau")], x_sub, ignore_attr = TRUE)
+  expect_equal(x[5:10, 3:4, c("mu", "tau")], x_sub, ignore_attr = "dimnames")
   expect_equal(iteration_ids(x_sub), 1:6)
   expect_equal(chain_ids(x_sub), 1:2)
 
   x_sub <- subset_draws(x, chain = c(1, 1), unique = FALSE)
   expect_equal(nchains(x_sub), 2)
-  expect_equal(x_sub[, 1, ], x_sub[, 2, ], ignore_attr = TRUE)
+  expect_equal(x_sub[, 1, ], x_sub[, 2, ], ignore_attr = "dimnames")
 
   expect_message(
     x_sub <- subset_draws(x, draw = c(1, 200, 10)),

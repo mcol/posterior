@@ -46,20 +46,20 @@ test_that("mutate_variables works correctly for draws_list objects", {
 test_that("mutate_variables works correctly for draws_matrix objects", {
   x <- as_draws_matrix(example_draws())
   x <- mutate_variables(x, tau2 = tau^2)
-  expect_equal(x[, "tau2"], x[, "tau"]^2, ignore_attr = TRUE)
+  expect_equal(x[, "tau2"], x[, "tau"]^2, ignore_attr = "dimnames")
 })
 
 test_that("mutate_variables works correctly for draws_array objects", {
   x <- as_draws_array(example_draws())
   x <- mutate_variables(x, tau2 = tau^2)
-  expect_equal(x[, , "tau2"], x[, , "tau"]^2, ignore_attr = TRUE)
+  expect_equal(x[, , "tau2"], x[, , "tau"]^2, ignore_attr = "dimnames")
 })
 
 test_that("mutate_variables works correctly for draws_rvars objects", {
   x <- as_draws_rvars(example_draws())
   x <- mutate_variables(x, tau_sq = tau^2, theta_2_sq = theta[[2]]^2)
-  expect_equal(x$tau_sq, x$tau^2, ignore_attr = TRUE)
-  expect_equal(x$theta_2_sq, x$theta[[2]]^2, ignore_attr = TRUE)
+  expect_equal(x$tau_sq, x$tau^2, ignore_attr = "cache")
+  expect_equal(x$theta_2_sq, x$theta[[2]]^2, ignore_attr = "cache")
 })
 
 test_that("mutate_variables drops variables on assigning NULL", {

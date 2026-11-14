@@ -159,15 +159,15 @@ test_that("rvars work in tibbles", {
   df = tibble::tibble(x, y = x + 1)
 
   expect_equal(df$x, x)
-  expect_equal(df$y, rvar(x_array + 1), ignore_attr = TRUE)
+  expect_equal(df$y, rvar(x_array + 1), ignore_attr = "cache")
   expect_equal(dplyr::mutate(df, z = x)$z, x)
 
   expect_equal(dplyr::mutate(df, z = x * 2)$z, rvar(x_array * 2),
-               ignore_attr = TRUE)
+               ignore_attr = "cache")
   expect_equal(
     dplyr::mutate(dplyr::group_by(df, 1:4), z = x * 2)$z,
     rvar(x_array * 2),
-    ignore_attr = TRUE
+    ignore_attr = "cache"
   )
 
   df = tibble::tibble(g = letters[1:4], x)
@@ -178,7 +178,7 @@ test_that("rvars work in tibbles", {
     d = rvar(x_array[,4, drop = FALSE])
   )
   expect_equal(tidyr::pivot_wider(df, names_from = g, values_from = x), ref,
-               ignore_attr = TRUE)
+               ignore_attr = "cache")
   expect_equal(tidyr::pivot_longer(ref, a:d, names_to = "g", values_to = "x"), df)
 
   df$y = df$x + 1
@@ -190,14 +190,14 @@ test_that("rvars work in tibbles", {
     d = c(rvar(NA), NA, NA, df$x[[4]]),
   )
   expect_equal(tidyr::pivot_wider(df, names_from = g, values_from = x), ref2,
-               ignore_attr = TRUE)
+               ignore_attr = "cache")
 
   expect_equal(dplyr::first(df$x), x[1])
 
   z = cbind(a = x, b = x + 1)
   df$z = z
   expect_equal(dplyr::mutate(dplyr::rowwise(df), w = z[,"b"])$w, z[,"b"],
-               ignore_attr = TRUE)
+               ignore_attr = "cache")
 })
 
 

@@ -212,7 +212,7 @@ test_that("glimpse on rvar works", {
   expect_equal(
     format_glimpse(x_vec),
     c("3.5 ± 1.9", "9.5 ± 1.9", "15.5 ± 1.9", "21.5 ± 1.9"),
-    ignore_attr = TRUE
+    ignore_attr = c("dim", "dimnames")
   )
   expect_equal(format_glimpse(x_matrix), "<rvar[3 x 4]>")
 })

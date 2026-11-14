@@ -198,7 +198,7 @@ test_that("lists can be transformed to draws_list objects", {
 test_that("numeric vectors can be transformed to draws_matrix objects", {
   draws_matrix <- draws_matrix(a = 1:10, b = 11:20, c = 1)
   draws_matrix2 <- as_draws_matrix(cbind(1:10, 11:20, 1))
-  expect_equal(draws_matrix, draws_matrix2, ignore_attr = TRUE)
+  expect_equal(draws_matrix, draws_matrix2, ignore_attr = "dimnames")
 })
 
 test_that("numeric vectors can be transformed to draws_array objects", {
