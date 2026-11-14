@@ -173,10 +173,8 @@ test_that("pareto_khat functions work with matrix with chains", {
   expect_equal(pareto_khat(tau_chains, ndraws_tail = 20),
                pareto_khat(tau_nochains, ndraws_tail = 20))
 
-  suppressMessages({
-  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, return_k = TRUE)
-  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, return_k = TRUE)
-  })
+  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
+  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
 
   expect_equal(as.numeric(ps_chains$x), as.numeric(ps_nochains$x))
 })
@@ -202,25 +200,21 @@ test_that("pareto_khat functions work with rvars with and without chains", {
   expect_equal(pareto_diags(tau_rvar_chains, ndraws_tail = 20),
                pareto_diags(tau_rvar_nochains, ndraws_tail = 20))
 
-  suppressMessages({
-  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, return_k = TRUE)
-  ps_rvar_chains <- pareto_smooth(tau_rvar_chains, ndraws_tail = 20, return_k = TRUE)
+  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
+  ps_rvar_chains <- pareto_smooth(tau_rvar_chains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
 
-  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, return_k = TRUE)
-  ps_rvar_nochains <- pareto_smooth(tau_rvar_nochains, ndraws_tail = 20, return_k = TRUE)
-  })
+  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
+  ps_rvar_nochains <- pareto_smooth(tau_rvar_nochains, ndraws_tail = 20, return_k = TRUE, verbose = FALSE)
 
   expect_equal(ps_rvar_chains$x, rvar(ps_chains$x, with_chains = TRUE))
 
   expect_equal(ps_rvar_nochains$x, rvar(ps_nochains$x))
 
-  suppressMessages({
-  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE)
-  ps_rvar_chains <- pareto_smooth(tau_rvar_chains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE)
+  ps_chains <- pareto_smooth(tau_chains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE, verbose = FALSE)
+  ps_rvar_chains <- pareto_smooth(tau_rvar_chains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE, verbose = FALSE)
 
-  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE)
-  ps_rvar_nochains <- pareto_smooth(tau_rvar_nochains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE)
-  })
+  ps_nochains <- pareto_smooth(tau_nochains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE, verbose = FALSE)
+  ps_rvar_nochains <- pareto_smooth(tau_rvar_nochains, ndraws_tail = 20, extra_diags = TRUE, return_k = TRUE, verbose = FALSE)
 
   expect_equal(ps_rvar_chains$x, rvar(ps_chains$x, with_chains = TRUE))
 
@@ -231,13 +225,11 @@ test_that("pareto_khat functions work with rvars with and without chains", {
 test_that("pareto_smooth returns x with smoothed tail(s)", {
   mu <- extract_variable_matrix(example_draws(), "mu")
 
-  suppressMessages({
-  mu_smoothed_right <- pareto_smooth(mu, ndraws_tail = 10, tail = "right", return_k = TRUE)$x
+  mu_smoothed_right <- pareto_smooth(mu, ndraws_tail = 10, tail = "right", return_k = TRUE, verbose = FALSE)$x
 
-  mu_smoothed_left <- pareto_smooth(mu, ndraws_tail = 10, tail = "left", return_k = TRUE)$x
+  mu_smoothed_left <- pareto_smooth(mu, ndraws_tail = 10, tail = "left", return_k = TRUE, verbose = FALSE)$x
 
-  mu_smoothed_both <- pareto_smooth(mu, ndraws_tail = 10, tail = "both", return_k = TRUE)$x
-  })
+  mu_smoothed_both <- pareto_smooth(mu, ndraws_tail = 10, tail = "both", return_k = TRUE, verbose = FALSE)$x
 
   expect_equal(sort(mu)[1:390], sort(mu_smoothed_right)[1:390])
   expect_equal(sort(mu_smoothed_both)[11:400], sort(mu_smoothed_right)[11:400])
